@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\SoloProject\\IsportProject\\IsportProject.csproj": {}
+    "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\Projects\\SoloProject\\IsportProject\\IsportProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\SoloProject\\IsportProject\\IsportProject.csproj": {
+    "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\Projects\\SoloProject\\IsportProject\\IsportProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\SoloProject\\IsportProject\\IsportProject.csproj",
+        "projectUniqueName": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\Projects\\SoloProject\\IsportProject\\IsportProject.csproj",
         "projectName": "IsportProject",
-        "projectPath": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\SoloProject\\IsportProject\\IsportProject.csproj",
+        "projectPath": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\Projects\\SoloProject\\IsportProject\\IsportProject.csproj",
         "packagesPath": "C:\\Users\\abir8_jgal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\SoloProject\\IsportProject\\obj\\",
+        "outputPath": "C:\\Users\\abir8_jgal\\OneDrive\\Bureau\\Projects\\SoloProject\\IsportProject\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\abir8_jgal\\AppData\\Roaming\\NuGet\\NuGet.Config"
