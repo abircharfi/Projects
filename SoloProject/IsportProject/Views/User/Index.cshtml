@@ -1,0 +1,45 @@
+
+@model User
+
+<div class="text-center mb-4"> 
+    <h1>ISport</h1>
+</div> 
+<div class="row justify-content-between">
+    <div class="col-5">
+        <h1>Register</h1>
+        <form asp-action="CreateUserForm" asp-controller="User" method="post">
+
+            <div class="form-group mb-3">
+                <label asp-for="FirstName"></label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+                <input asp-for="FirstName" class="form-control">
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="LastName"></label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+                <input asp-for="LastName" class="form-control">
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+                <input asp-for="Email" class="form-control">
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <input asp-for="Password" class="form-control">
+            </div>
+             <div class="form-group mb-3">
+                <label asp-for="Birthdate"></label>
+                <span asp-validation-for="Birthdate" class="text-danger"></span>
+                <input asp-for="Birthdate" class="form-control" type="date">
+            </div>
+            <input type="submit" value="Register" class="btn btn-primary">
+        </form>
+    </div>
+    <div class="col-5">
+        <h1>Login</h1>
+      <partial name="LoginPartial"></partial>
+
+    </div>
+</div>

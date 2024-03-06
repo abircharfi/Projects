@@ -1,0 +1,81 @@
+@{
+    #pragma warning disable CS8602
+}
+@model Event
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Page</title>
+    <!-- Include necessary CSS and JS libraries, such as Bootstrap and jQuery -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Section -->
+            <div class="col-md-3" style="width: 200px; float: left;">
+                <!-- Event Date Button -->
+                <button class="btn btn-primary btn-block" id="eventDateBtn">Event Date</button>
+                <!-- Information Button -->
+                <button class="btn btn-info btn-block mt-2" id="infoBtn">Information</button>
+                <!-- Users Button -->
+                <button class="btn btn-success btn-block mt-2" id="usersBtn">Users</button>
+            </div>
+
+            <!-- Information Border -->
+            <div class="col-md-3" style="width: 200px; float: left; margin-left: 10px;">
+                <div id="infoBorder" class="border p-3">
+                    <!-- Content will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Right Section for Google Maps -->
+            <div class="col-md-6" style="float: left; margin-left: 10px;">
+                
+                <div id="googleMap" style="height: 400px;"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d204479.3528469298!2d9.847919241463654!3d36.79479283568425!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fd337f5e7ef543%3A0xd671924e714a0275!2sTunis!5e0!3m2!1sfr!2stn!4v1709675624349!5m2!1sfr!2stn" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+            </div>
+        </div>
+
+        <!-- Mini Chat Section in the Center -->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div id="miniChat" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll;">
+                    <!-- Chat content will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include your Google Maps API script here -->
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+
+    <!-- Include your custom JavaScript for handling button clicks and AJAX requests -->
+    <script>
+        // Your JavaScript code goes here
+        $(document).ready(function () {
+            // Add event handlers for button clicks
+            $("#eventDateBtn").click(function () {
+                // Load event date information
+                // Use AJAX to fetch and update #infoBorder
+            });
+
+            $("#infoBtn").click(function () {
+                // Load event information
+                // Use AJAX to fetch and update #infoBorder
+            });
+
+            $("#usersBtn").click(function () {
+                // Load users information
+                // Use AJAX to fetch and update #infoBorder
+            });
+        });
+    </script>
+</body>
+</html>

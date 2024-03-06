@@ -1,0 +1,37 @@
+
+@{
+    #pragma warning disable CS8629
+    int currentUserId = (int)Context.Session.GetInt32("UserId");
+}
+@model Event
+
+
+
+<h1>Make an Event</h1>
+<form class="w-50" asp-action="CreateEvent" method="post">
+    <input type="hidden" asp-for="UserId" value="@currentUserId">
+    
+    <div class="mb-3">
+        <label class="form-label" asp-for="EventName"></label>
+        <input class="form-control " asp-for="EventName">
+        <span class="text-danger" asp-validation-for="EventName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="Location"></label>
+        <input class="form-control " asp-for="Location">
+        <span class="text-danger" asp-validation-for="Location"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="EventDate"></label>
+        <input class="form-control" asp-for="EventDate"></input>
+        <span class="text-danger" asp-validation-for="EventDate"></span>
+    </div>
+    <div class="mb-3">
+        
+        <label class="form-label" asp-for="AttendeesNumber"></label>
+        <input class="form-control" asp-for="AttendeesNumber"></input>
+        <span class="text-danger" asp-validation-for="AttendeesNumber"></span>
+    </div>
+    <button class="btn btn-primary ">Add Event</button>
+</form>
