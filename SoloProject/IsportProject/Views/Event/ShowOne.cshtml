@@ -1,5 +1,5 @@
 @{
-    #pragma warning disable CS8602
+#pragma warning disable CS8602
 }
 @model Event
 
@@ -20,14 +20,49 @@
 <div class="container-fluid clearfix">
     <div class="row">
         <div class="col-md-2">
-            <button class="btn btn-primary btn-block" id="eventDateBtn" onclick="showInfo('Event Date')">Event Date</button>
-            <button class="btn btn-info btn-block mt-2" id="infoBtn" onclick="showInfo('Information')">Information</button>
-            <button class="btn btn-success btn-block mt-2" id="usersBtn" onclick="showInfo('Users')">Users</button>
+            <a asp-action="ShowInfo" asp-controller="Event" asp-route-EventId="@Model.EventId"
+                asp-route-infoType="EventDate" class="btn btn-primary btn-block">Event Date</a>
+            <a asp-action="ShowInfo" asp-controller="Event" asp-route-EventId="@Model.EventId"
+                asp-route-infoType="Information" class="btn btn-info btn-block mt-2">Information</a>
+            <a asp-action="ShowInfo" asp-controller="Event" asp-route-EventId="@Model.EventId"
+                asp-route-infoType="Users" class="btn btn-success btn-block mt-2">Users</a>
         </div>
-        
 
         <div class="col-md-3" style="margin-left: 0; padding-left: 0;">
             <div id="infoBorder">
+                @if (ViewBag.InfoType == "EventDate")
+                {
+                    <h4>Event Date Information</h4>
+                    <p>@Model.EventDate</p>
+                }
+                else if (ViewBag.InfoType == "Information")
+                {
+                    <h4>General Information</h4>
+                    <p><b>Title : </b> @Model.EventName</p>
+                    <p><b>Attendees : </b>@Model.AttendeesNumber players</p>
+                    <p><b>Time : </b>@Model.EventDate.ToString("h:mm tt")</p>
+                }
+                else if (ViewBag.InfoType == "Users")
+                {
+
+                    @if (ViewBag.users != null)
+                    {
+                        <h4>Team Information</h4>
+                        <ul>
+                            @foreach (User teamMember in ViewBag.users)
+                            {
+                             
+                                    <li>@teamMember.FirstName @teamMember.LastName</li>
+                               
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No team members found.</p>
+                    }
+
+                }
             </div>
         </div>
 
@@ -43,30 +78,31 @@
     </div>
 </div>
 
+
 <!-- Load Leaflet.js and your script when the page is loaded -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
     // Function to initialize the map
-   function initMap() {
-    var locationString = "@Model.Location";
-    var locationArray = locationString.split(',').map(function (value) {
-        return parseFloat(value.trim());
-    });
+    function initMap() {
+        var locationString = "@Model.Location";
+        var locationArray = locationString.split(',').map(function (value) {
+            return parseFloat(value.trim());
+        });
 
-    if (!isNaN(locationArray[0]) && !isNaN(locationArray[1])) {
-        var map = L.map('leafletMap').setView(locationArray, 15);
-        L.marker(locationArray).addTo(map);
+        if (!isNaN(locationArray[0]) && !isNaN(locationArray[1])) {
+            var map = L.map('leafletMap').setView(locationArray, 15);
+            L.marker(locationArray).addTo(map);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-    } else {
-        console.error("Invalid coordinates in the location string.");
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        } else {
+            console.error("Invalid coordinates in the location string.");
+        }
     }
-}
 
-    
+
     // Load the map when the page is loaded
     window.onload = initMap;
 </script>

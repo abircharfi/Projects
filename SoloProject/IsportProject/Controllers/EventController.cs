@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Reflection.PortableExecutable;
@@ -21,15 +22,9 @@ public class EventController : Controller
     [HttpGet("Dashboard")]
 public IActionResult Index()
 {
-    if (!IsUserLoggedIn()) return RedirectToIndex(); // Make sure this is the intended behavior.
-
-    var userId = HttpContext.Session.GetInt32("UserId");
-    if (userId == null) return RedirectToIndex(); // Assuming RedirectToIndex() redirects appropriately.
-
-    var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
-    if (user == null) return NotFound("User not found."); // User not found in the database.
-
-    // Fetch all events including related data.
+    if (!IsUserLoggedIn()) return RedirectToIndex(); 
+    var CurrentUser = HttpContext.Session.GetInt32("UserId"); 
+    User user = _context.Users.FirstOrDefault(u=>u.UserId== CurrentUser);
     var events = _context.Events
                          .Include(e => e.Creator)
                          .Include(e => e.Team)
@@ -37,19 +32,17 @@ public IActionResult Index()
 
     // Fetch attendances for the current user.
     var attendanceUser = _context.Attendance
-                                 .Where(a => a.UserId == userId)
+                                 .Where(a => a.UserId == user.UserId)
                                  .ToList();
 
-    // Initialize UserEvents as a List<Event>.
     var userEvents = new List<Event>();
 
-    // Populate UserEvents with events the user is attending.
     foreach (var item in attendanceUser)
     {
         var eventToAdd = _context.Events
                                  .Where(e => e.EventDate == DateTime.Today)
-                                 .Include(e => e.Creator) // Assuming you also want related data here
-                                 .Include(e => e.Team)    // Same as above
+                                 .Include(e => e.Creator) 
+                                 .Include(e => e.Team)    
                                  .FirstOrDefault(e => e.EventId == item.EventId);
 
         if (eventToAdd != null)
@@ -95,24 +88,110 @@ public IActionResult Index()
 
     }
 
+// Display event 
+[HttpGet("event/{EventId}")]
+public IActionResult showOne(int EventId, string infoType = null)
+{
+    if (!IsUserLoggedIn()) return RedirectToIndex();
+    Event selectedEvent = _context.Events
+                                  .Include(e => e.Creator)
+                                  .Include(e => e.Team)
+                                  .FirstOrDefault(p => p.EventId == EventId);
+              
 
-// display event 
-    [HttpGet("event/{EventId}")]
-    public IActionResult showOne(int EventId)
+    // current user
+    var User = HttpContext.Session.GetInt32("UserId");
+    ViewBag.UserId = User;
+
+    // Team 
+    var attendances = _context.Attendance.Where(a => a.EventId == EventId).ToList();
+    var userIds = attendances.Select(a => a.UserId).ToList();
+    var usersInEvent = _context.Users.Where(u => userIds.Contains(u.UserId)).ToList();
+ 
+    if (infoType != null)
     {
-         if (!IsUserLoggedIn()) return RedirectToIndex();
-        Event selectedEvent  = _context.Events
-                             .Include(e => e.Creator)
-                             .Include(e=>e.Team)
-                             .FirstOrDefault(p=>p.EventId == EventId);
+        ViewBag.InfoType = infoType;
+    }
+    ViewBag.users = usersInEvent;
 
-       // bool like =_context.Likes.Any(l=>l.PostId ==PostId && l.UserId == HttpContext.Session.GetInt32("UserId"));
-        var User = HttpContext.Session.GetInt32("UserId");
-        ViewBag.UserId = User;
-       // ViewBag.Like=like;
-        return View(selectedEvent );
+    return View(selectedEvent);
+}
+
+// Event info 
+[HttpGet("EventInfo/{EventId}/{infoType}")]
+public IActionResult ShowInfo(int EventId, string infoType)
+{
+    
+    Event selectedEvent = _context.Events
+                                  .Include(e => e.Creator)
+                                  .Include(e => e.Team)
+                                  .FirstOrDefault(p => p.EventId == EventId);
+
+    
+    if (infoType != null)
+    {
+        ViewBag.InfoType = infoType;
     }
 
+    return View("showOne", selectedEvent);
+}
+
+
+// Search Event 
+[HttpGet("search")]
+
+public IActionResult Search(string searchOption, string searchValue)
+{
+    if (!IsUserLoggedIn()) return RedirectToIndex();  
+    var events = _context.Events
+                         .Include(e => e.Creator)
+                         .Include(e => e.Team)
+                         .ToList();
+
+    if (searchValue != null)
+         {
+            if(searchOption == "name")
+            {
+             var SearchByName = _context.Events
+                                        .Where(e => e.EventName
+                                        .Contains(searchValue))
+                                        .Include(e => e.Creator)
+                                        .Include(e => e.Team).ToList(); 
+             events = SearchByName;
+            }
+            if(searchOption == "creator")
+            {
+             var SearchByCreator = _context.Events
+                                           .Where(e => e.Creator.FirstName
+                                           .Contains(searchValue))
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Team)
+                                           .ToList(); 
+
+              events = SearchByCreator;
+            }
+            if(searchOption == "date")
+            {
+              DateTime searchDate;
+            if (DateTime.TryParse(searchValue, out searchDate))
+            {
+                var SearchByDate = _context.Events
+                                           .Where(e => e.EventDate.Date == searchDate.Date)
+                                           .Include(e => e.Creator)
+                                           .Include(e => e.Team)
+                                           .ToList(); 
+             events = SearchByDate;
+            }
+             else
+            {
+            ModelState.AddModelError("searchValue", "Invalid date format. Please enter a valid date.");
+            ViewData["DateError"] = "Invalid date format. Please enter a valid date.";
+            }
+            }
+         }
+
+        return View(events);  
+}
     
  //---------------------------------IsUserLoggedIn method
     private bool IsUserLoggedIn()

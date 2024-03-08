@@ -1,0 +1,91 @@
+@{
+    int currentUserId = (int)Context.Session.GetInt32("UserId");
+}
+@model List<Event>
+
+@if (Model.Count == 0)
+{
+    <h3 class="bg-warning text-center">There's still no Events</h3>
+}
+else
+{
+<div class="d-flex justify-content-center gap-2 mt-3">
+    <form method="get" action="search" class="d-flex gap-2 align-items-center">
+
+        <div class="form-group flex-grow-1 max-width-200px">
+            <input type="text" class="form-control form-control-sm" name="searchValue" placeholder="Enter your search" />
+        </div>
+       
+
+        <div class="form-group d-flex align-items-center">
+            <label for="searchOption" class="me-2" style="width: 150px;">Search By:</label>
+            <select class="form-control form-control-sm" id="searchOption" name="searchOption">
+                <option value="name">Name</option>
+                <option value="creator">Creator</option>
+                <option value="date">Date</option>
+            </select>
+        </div>
+        <div class="text-center">
+        @if (!string.IsNullOrEmpty(ViewData["DateError"] as string))
+        {
+            <span class="text-danger">@ViewData["DateError"]</span>
+        }
+</div>
+
+
+        <button type="submit" class="btn btn-primary text-white">Submit</button>
+    </form>
+
+    
+
+    <a href="search" class="btn" style="background-color: purple; color: white;">Clear Search</a>
+</div>
+
+
+<div class="container">
+    <table class="table table-striped " style="margin-top: 20px;">
+        <thead>
+            <th>Event Name</th>
+            <th>Location Name</th>
+            <th>Attendees</th>
+            <th>Date</th>
+            <th>Creator</th>
+            <th>Action</th>
+           
+        </thead>
+        <tbody>
+           @foreach (var currentEvent in Model)
+{
+    <tr>
+       <td><a asp-action="showOne" asp-controller="Event" asp-route-EventId="@currentEvent.EventId" >@currentEvent.EventName</a></td>
+        <td>@currentEvent.Location</td>
+        <td>@currentEvent.Team.Count / @currentEvent.AttendeesNumber </td>
+        <td>@currentEvent.EventDate</td>
+        <td>@currentEvent.Creator.FirstName  @currentEvent.Creator.LastName</td>
+        <td> @{
+        bool userHasJoinedEvent = currentEvent.Team.Any(a => a.UserId == currentUserId);
+        if(currentEvent.AttendeesNumber == currentEvent.Team.Count)
+        {
+            <p>Full</p> 
+        }
+        if (userHasJoinedEvent)
+        {
+            <p>Joined</p>
+        }
+        else
+        {
+            <form class="w-50" asp-action="LikeThePost" method="post">
+                <input type="hidden" name="UserId" value="@currentUserId">
+                <input type="hidden" name="EventId" value="@currentEvent.EventId">
+                <button class="btn btn-warning">Join</button>
+            </form>
+        }
+       
+    }</td>
+    </tr>
+}
+
+        </tbody>
+    </table>
+</div>
+}
