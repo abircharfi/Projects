@@ -68,3 +68,7 @@ C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\obj\Debug
 C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\obj\Debug\net6.0\IsportProject.pdb
 C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\obj\Debug\net6.0\IsportProject.genruntimeconfig.cache
 C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\obj\Debug\net6.0\ref\IsportProject.dll
+C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\bin\Debug\net6.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\bin\Debug\net6.0\package-lock.json
+C:\Users\abir8_jgal\OneDrive\Bureau\Projects\SoloProject\IsportProject\bin\Debug\net6.0\package.json

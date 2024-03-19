@@ -17,7 +17,7 @@ public class Event
 
 
     [Required(ErrorMessage = "Location is required")]
-    [DisplayName("Location Name")]
+    [DisplayName("Location")]
     public string Location {get; set;}
     
     [Required(ErrorMessage = "Date is required")]

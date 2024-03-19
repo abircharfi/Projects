@@ -4,10 +4,11 @@
 <div class="text-center mb-4"> 
     <h1>ISport</h1>
 </div> 
-<div class="row justify-content-between">
-    <div class="col-5">
-        <h1>Register</h1>
-        <form asp-action="CreateUserForm" asp-controller="User" method="post">
+<div class="Container">
+   
+        <h1>Update User</h1>
+        <form asp-action="UpdateUser" asp-controller="User" method="post">
+            <input type="hidden" asp-for="UserId" value="@Model.UserId">
 
             <div class="form-group mb-3">
                 <label asp-for="FirstName"></label>
@@ -35,12 +36,8 @@
                 <input asp-for="Birthdate" class="form-control" type="date">
             </div>
 
-            <input type="submit" value="Register" class="btn btn-primary">
+            <input type="submit" value="Update" class="btn btn-primary">
         </form>
-    </div>
-    <div class="col-5">
-        <h1>Login</h1>
-      <partial name="LoginPartial"></partial>
-
-    </div>
+    
+   
 </div>

@@ -8,5 +8,6 @@ public MyContext(DbContextOptions options) : base (options) {}
 public DbSet<User> Users {get; set;}
 public DbSet<Event> Events {get; set;}
 public DbSet<Attendance> Attendance {get; set;}
+public DbSet<ChatMessage> ChatMessages { get; set; }
 
 }

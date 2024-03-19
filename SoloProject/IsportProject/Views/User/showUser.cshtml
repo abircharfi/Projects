@@ -1,0 +1,54 @@
+@model User
+
+<div class="row justify-content-between">
+    <div class="col-5">
+        <p><b>Name : </b>@Model.FirstName @Model.LastName</p>
+        <p><b>Email : </b>@Model.Email</p>
+        <p><b>Password : </b>@Model.Password</p>
+
+        <a asp-action="EditUser" asp-controller="User" asp-route-UserId="@Model.UserId">Edit</a>
+
+        <p><b>Event History : </b></p>
+        <p>
+        @foreach (var ev in Model.EventCreated)
+        {
+            if (ev.EventDate < DateTime.Now)
+            {
+                <li>@ev.EventName</li>
+            }
+        }
+        </p>
+
+
+
+        <p><b>Future Event : </b></p>
+        <p>
+        @foreach (var ev in Model.EventCreated)
+        {
+            if (ev.EventDate > DateTime.Now)
+            {
+                <li>@ev.EventName</li>
+            }
+        }
+        </p>
+    </div>
+    <div class="col-5">
+        @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+        {
+            <img src="/images/@Model.ProfilePicture" style="width: 200px; Max-Height:300px" />
+        }
+        else
+        {
+            <img src="/images/default-profile-picture.jpg" alt="Default Profile Picture" />
+        }
+
+        <form asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="UserId" value="@Model.UserId">
+            <div class="mb-3">
+                <label class="form-label" asp-for="ProfilePicture"></label>
+                <input class="form-control" type="file" name="ProfilePicture">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    </div>
+</div>

@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
+ #pragma warning disable CS8765
+ #pragma warning disable CS8603
+
 namespace IsportProject.Attributes ;
 
 public class EventDateValidation : ValidationAttribute

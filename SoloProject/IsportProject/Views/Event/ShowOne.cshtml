@@ -1,21 +1,15 @@
 @{
 #pragma warning disable CS8602
+
 }
 @model Event
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event Page</title>
+
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
-<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+
+
 
 <div class="container-fluid clearfix">
     <div class="row">
@@ -45,15 +39,13 @@
                 else if (ViewBag.InfoType == "Users")
                 {
 
-                    @if (ViewBag.users != null)
+                    @if (ViewBag.Team != null && ViewBag.Team.Count > 0)
                     {
-                        <h4>Team Information</h4>
+                        <h4>Team  : </h4>
                         <ul>
-                            @foreach (User teamMember in ViewBag.users)
+                            @foreach (var teamMember in ViewBag.Team)
                             {
-                             
-                                    <li>@teamMember.FirstName @teamMember.LastName</li>
-                               
+                                <li>@teamMember.FirstName @teamMember.LastName</li>
                             }
                         </ul>
                     }
@@ -61,25 +53,45 @@
                     {
                         <p>No team members found.</p>
                     }
-
                 }
             </div>
         </div>
 
         <div class="col-md-6">
-            <div id="leafletMap" style="height: 400px; min-height: 300px; width: 100%;"></div>
+            <div id="leafletMap"></div>
         </div>
     </div>
-    <div class="row mt-3">
-        <div class="col-md-12 text-center">
-            <div id="miniChat">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="chatContainer" class="border rounded p-3 mb-3">
+                @foreach (var message in ViewBag.ChatMessages)
+                {
+                    <li>@message.User.FirstName @message.User.LastName : @message.Message</li>
+                }
+
             </div>
+
+
         </div>
+
     </div>
+    <div class="row">
+
+        <div class="input-group mb-3">
+
+            @Html.Partial("MessagePartial", new ChatMessage { UserId = ViewBag.CurrentUser, EventId = Model.EventId })
+
+        </div>
+
+    </div>
+
 </div>
 
-
-<!-- Load Leaflet.js and your script when the page is loaded -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>

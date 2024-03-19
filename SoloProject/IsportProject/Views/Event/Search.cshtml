@@ -56,12 +56,14 @@ else
         <tbody>
            @foreach (var currentEvent in Model)
 {
+    if(currentEvent.EventDate > DateTime.Now)
+    {
     <tr>
        <td><a asp-action="showOne" asp-controller="Event" asp-route-EventId="@currentEvent.EventId" >@currentEvent.EventName</a></td>
         <td>@currentEvent.Location</td>
         <td>@currentEvent.Team.Count / @currentEvent.AttendeesNumber </td>
         <td>@currentEvent.EventDate</td>
-        <td>@currentEvent.Creator.FirstName  @currentEvent.Creator.LastName</td>
+        <td><a asp-action="showUser" asp-controller="User" asp-route-UserId="@currentUserId" >@currentEvent.Creator.FirstName  @currentEvent.Creator.LastName</a></td>
         <td> @{
         bool userHasJoinedEvent = currentEvent.Team.Any(a => a.UserId == currentUserId);
         if(currentEvent.AttendeesNumber == currentEvent.Team.Count)
@@ -74,7 +76,7 @@ else
         }
         else
         {
-            <form class="w-50" asp-action="LikeThePost" method="post">
+            <form class="w-50" asp-action="JoinEvent" method="post">
                 <input type="hidden" name="UserId" value="@currentUserId">
                 <input type="hidden" name="EventId" value="@currentEvent.EventId">
                 <button class="btn btn-warning">Join</button>
@@ -83,6 +85,7 @@ else
        
     }</td>
     </tr>
+    }
 }
 
         </tbody>

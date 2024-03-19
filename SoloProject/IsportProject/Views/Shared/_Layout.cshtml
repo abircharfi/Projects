@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    int? currentUserIdNullable = Context.Session.GetInt32("UserId");
+    int currentUserId = currentUserIdNullable.HasValue ? currentUserIdNullable.Value : 0;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,7 +37,7 @@
                         </li>
                          
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Account">Account</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-route-UserId="@currentUserId" asp-action="showUser">Account</a>
                         </li>
                     </ul>
                      <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Logout">Logout</a>
@@ -48,11 +53,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - IsportProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

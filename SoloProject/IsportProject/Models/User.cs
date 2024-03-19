@@ -29,10 +29,13 @@ public class User
     [MinLength(8, ErrorMessage ="Password should be at least 8 characters")]
     [DataType(DataType.Password)]
     public string Password {get; set;}
-
     
     [ValidationDateAttribute]
     public string Birthdate {get; set;}
+   
+    public string? ProfilePicture { get; set; }
+
+    public int Passwordlength { get; set; }
 
     // Navigation property for Events created by the user
     public List<Event> EventCreated { get; set; } = new List<Event>();

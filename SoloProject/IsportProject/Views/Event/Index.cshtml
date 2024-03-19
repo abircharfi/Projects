@@ -1,32 +1,84 @@
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 @model List<Event>
-<h1>Welcome @ViewBag.user.FirstName </h1>
+@{
+    int itemsPerPage = 6;
+    int pageCount = (int)Math.Ceiling((double)Model.Count / itemsPerPage);
+}
+
+<h1>Welcome @ViewBag.user.FirstName</h1>
+
+@if (!string.IsNullOrEmpty(ViewBag.NotificationMessage))
+{
+    <div class="alert alert-success">
+        @ViewBag.NotificationMessage
+    </div>
+}
+
 @if (Model.Count == 0)
 {
-    <h3 class="bg-warning text-center">There's still no Events</h3>
+    <h3 class="bg-warning text-center">There are still no events</h3>
 }
 else
 {
-    <partial name="PartialUserEvent" Model="ViewBag.UserEvents"></partial>
-    <table class="table table-striped ">
+    <partial name="PartialUserEvent" model="ViewBag.UserEvents"></partial>
+
+    <table class="table table-striped">
         <thead>
-            <th>Event Name</th>
-            <th>Location Name</th>
-            <th>Attendees</th>
-            <th>Date</th>
-           
+            <tr>
+                <th>Event Name</th>
+                <th>Location</th>
+                <th>Attendees</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
-           @foreach (var currentEvent in Model)
-{
-    <tr>
-       <td><a asp-action="showOne" asp-controller="Event" asp-route-EventId="@currentEvent.EventId" >@currentEvent.EventName</a></td>
-        <td>@currentEvent.Location</td>
-        <td>@currentEvent.Team.Count / @currentEvent.AttendeesNumber </td>
-        <td>@currentEvent.EventDate</td>
-    </tr>
-}
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var currentEvent = Model[i];
 
+                // Display only future events
+                if (currentEvent.EventDate > DateTime.Now)
+                {
+                    <tr>
+                        <td><a asp-action="showOne" asp-controller="Event" asp-route-EventId="@currentEvent.EventId">@currentEvent.EventName</a></td>
+                        <td>@currentEvent.Location</td>
+                        <td>@currentEvent.Team.Count / @currentEvent.AttendeesNumber</td>
+                        <td>@currentEvent.EventDate</td>
+                        <td>
+                            @if (currentEvent.UserId == ViewBag.user.UserId)
+                            {
+                                <a asp-action="EditEvent" asp-controller="Event" asp-route-EventId="@currentEvent.EventId">Edit</a>
+                                <a asp-action="DeleteEvent" asp-controller="Event" asp-route-EventId="@currentEvent.EventId">Delete</a>
+                            }
+                            else
+                            {
+                                <p>No actions</p>
+                            }
+                        </td>
+                    </tr>
+
+                    // Break out of the loop if enough items have been displayed
+                    if (i >= itemsPerPage - 1)
+                    {
+                        break;
+                    }
+                }
+            }
         </tbody>
     </table>
+
+   @if (Model.Count > itemsPerPage)
+{
+    <ul class="pagination">
+        @for (int i = 1; i <= pageCount; i++)
+        {
+            <li class="page-item @(i == 1 ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+            </li>
+        }
+    </ul>
+}
+
 }

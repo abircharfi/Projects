@@ -1,0 +1,87 @@
+
+@{
+    #pragma warning disable CS8629
+  
+}
+@model Event
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+<script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+
+<h1>edit an Event</h1>
+<form class="w-50" asp-action="UpdateEvent" method="post">
+    <input type="hidden" asp-for="UserId" value="@ViewBag.UserId">
+    <input type="hidden" asp-for="EventId" value="@Model.EventId">
+    
+    <div class="mb-3">
+        <label class="form-label" asp-for="EventName"></label>
+        <input class="form-control " asp-for="EventName">
+        <span class="text-danger" asp-validation-for="EventName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="Location"></label>
+        <input class="form-control" asp-for="Location" id="locationInput">
+        <span class="text-danger" asp-validation-for="Location"></span>
+    </div>
+   
+    <div id="map" style="height: 300px;"></div>
+
+    <div class="mb-3">
+        <label class="form-label" asp-for="EventDate"></label>
+        <input class="form-control" asp-for="EventDate"></input>
+        <span class="text-danger" asp-validation-for="EventDate"></span>
+    </div>
+    <div class="mb-3">
+        
+        <label class="form-label" asp-for="AttendeesNumber"></label>
+        <input class="form-control" asp-for="AttendeesNumber"></input>
+        <span class="text-danger" asp-validation-for="AttendeesNumber"></span>
+    </div>
+    <button class="btn btn-primary ">Add Event</button>
+</form>
+
+<script>
+    // Initialize the map using Leaflet.js
+    var map = L.map('map').setView([0, 0], 2);
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Initialize Leaflet.draw
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = new L.Control.Draw({
+        draw: {
+            marker: true,
+            circle: false,
+            rectangle: false,
+            polygon: false,
+            polyline: false,
+        },
+        edit: {
+            featureGroup: drawnItems,
+            remove: false,
+        },
+    });
+
+    map.addControl(drawControl);
+
+    map.on('draw:created', function (e) {
+        var type = e.layerType;
+        var layer = e.layer;
+
+        if (type === 'marker') {
+            var latLng = layer.getLatLng();
+            document.getElementById('locationInput').value = latLng.lat + ', ' + latLng.lng;
+        }
+
+        drawnItems.addLayer(layer);
+    });
+</script>

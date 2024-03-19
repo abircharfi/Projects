@@ -1,10 +1,26 @@
 @model List<Event>
-@if (Model.Count == 0)
-{
-    <h3 class="bg-warning text-center">There's no Events For Today</h3>
+
+@{
+    bool hasEventsForToday = false;
+    int numberEvents = 0;
+    
+    foreach (var currentEvent in Model)
+    {
+        
+        
+       if (currentEvent.EventDate.Date == DateTime.Today.Date)
+        {
+            hasEventsForToday = true;
+            numberEvents++;
+            
+        }
+    }
 }
-else
+
+@if (hasEventsForToday)
 {
+    <h3>Today Is @DateTime.Now.ToString("MMMM d") and you have @numberEvents @(numberEvents == 1 ? "event" : "events")</h3>
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -17,17 +33,22 @@ else
         <tbody>
             @foreach (var currentEvent in Model)
             {
-                
+                if (currentEvent.EventDate.Date == DateTime.Today)
+                {
                     <tr>
                         <td>
                             <a asp-action="showOne" asp-controller="Event" asp-route-EventId="@currentEvent.EventId">@currentEvent.EventName</a>
                         </td>
                         <td>@currentEvent.Location</td>
                         <td>@currentEvent.Team.Count / @currentEvent.AttendeesNumber</td>
-                        <td>@currentEvent.EventDate.ToString("h:mm tt")</td>
+                        <td>@currentEvent.EventDate.ToString("hh:mm tt")</td>
                     </tr>
-                
+                }
             }
         </tbody>
     </table>
+}
+else
+{
+    <h3 class="bg-warning text-center">There are no events for today</h3>
 }

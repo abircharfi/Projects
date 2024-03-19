@@ -1,6 +1,6 @@
-using System.Xml.Serialization;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
+#pragma warning disable CS8600
+#pragma warning disable CS8625
+#pragma warning disable CS8602
 using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +34,13 @@ public IActionResult Index()
     var attendanceUser = _context.Attendance
                                  .Where(a => a.UserId == user.UserId)
                                  .ToList();
+  
+    var userEvents = _context.Events
+                             .Where(e => e.Team.Any(t => t.UserId == CurrentUser))
+                             .Include(e => e.Creator)
+                             .Include(e => e.Team)
+                             .ToList();
 
-    var userEvents = new List<Event>();
 
     foreach (var item in attendanceUser)
     {
@@ -50,7 +55,11 @@ public IActionResult Index()
             userEvents.Add(eventToAdd);
         }
     }
-
+    if (TempData != null)
+    {
+    ViewBag.NotificationMessage = TempData["NotificationMessage"] as string;
+    }
+    
     ViewBag.User = user;
     ViewBag.UserEvents = userEvents;
     return View(events);     
@@ -66,27 +75,36 @@ public IActionResult Index()
         return View();
     }
 
-   [HttpPost]
-    public IActionResult CreateEvent(Event NewEvent)
-    {
-     
+  [HttpPost]
+public IActionResult CreateEvent(Event NewEvent)
+{
     if (ModelState.IsValid)
     {
         _context.Add(NewEvent);
         _context.SaveChanges();
-        var attendance = new Attendance 
+
+        var attendance = new Attendance
         {
-            UserId = NewEvent.UserId, 
+            UserId = NewEvent.UserId,
             EventId = NewEvent.EventId
         };
+
         _context.Attendance.Add(attendance);
         _context.SaveChanges();
-       return RedirectToAction("ShowOne", new { EventId = NewEvent.EventId });
 
-    }    
-    return View("AddEvent");
+        var notificationMessage = $"New event added: {NewEvent.EventName} on {NewEvent.EventDate}";
+       
+        if (TempData != null)
+        {
+          TempData["NotificationMessage"] = notificationMessage;
+        }
 
+        return RedirectToAction("Index");
     }
+
+    return View("AddEvent");
+}
+
 
 // Display event 
 [HttpGet("event/{EventId}")]
@@ -100,19 +118,21 @@ public IActionResult showOne(int EventId, string infoType = null)
               
 
     // current user
-    var User = HttpContext.Session.GetInt32("UserId");
-    ViewBag.UserId = User;
-
-    // Team 
-    var attendances = _context.Attendance.Where(a => a.EventId == EventId).ToList();
-    var userIds = attendances.Select(a => a.UserId).ToList();
-    var usersInEvent = _context.Users.Where(u => userIds.Contains(u.UserId)).ToList();
+    var CurrentUser = HttpContext.Session.GetInt32("UserId");
+    ViewBag.CurrentUser = CurrentUser;  
  
-    if (infoType != null)
-    {
-        ViewBag.InfoType = infoType;
-    }
-    ViewBag.users = usersInEvent;
+    // display chat messages  
+    var chatMessages = _context.ChatMessages
+        .Where(c=>c.EventId == selectedEvent.EventId)
+        .Include(c => c.User)
+        .OrderBy(c => c.CreatedAt)
+        .ToList();
+
+    ViewBag.ChatMessages = chatMessages;
+
+    var NewMessage = new ChatMessage();
+
+    ViewBag.NewMessage = NewMessage;
 
     return View(selectedEvent);
 }
@@ -132,6 +152,23 @@ public IActionResult ShowInfo(int EventId, string infoType)
     {
         ViewBag.InfoType = infoType;
     }
+    // Team info
+    var attendances = _context.Attendance.Where(a => a.EventId == EventId).ToList();
+    var userIds = attendances.Select(a => a.UserId).ToList();
+    var usersInEvent = _context.Users.Where(u => userIds.Contains(u.UserId)).ToList();
+    var teamMembers = usersInEvent.Any() ? usersInEvent : null;
+    ViewBag.Team = teamMembers ;
+   
+   // chat part
+    var CurrentUser = HttpContext.Session.GetInt32("UserId");
+    var chatMessages = _context.ChatMessages
+        .Where(c=>c.EventId == selectedEvent.EventId)
+        .Include(c => c.User)
+        .OrderBy(c => c.CreatedAt)
+        .ToList();
+
+    ViewBag.ChatMessages = chatMessages;
+    ViewBag.CurrentUser = CurrentUser;
 
     return View("showOne", selectedEvent);
 }
@@ -192,6 +229,70 @@ public IActionResult Search(string searchOption, string searchValue)
 
         return View(events);  
 }
+// update event 
+
+[HttpPost]
+    public IActionResult UpdateEvent(Event EditedEvent)
+    {
+    
+        if (ModelState.IsValid)
+        {
+            Event oldEvent = _context.Events.FirstOrDefault(p => p.EventId == EditedEvent.EventId);
+            oldEvent.EventName = EditedEvent.EventName;
+            oldEvent.Location = EditedEvent.Location;
+            oldEvent.EventDate = EditedEvent.EventDate;
+            oldEvent.AttendeesNumber = EditedEvent.AttendeesNumber;
+            oldEvent.UpdatedAt = DateTime.Now;
+            _context.SaveChanges();
+            return RedirectToAction("showOne", new {EventId= EditedEvent.EventId});
+        }
+        return RedirectToAction("EditEvent");
+    }
+
+// Edit event
+
+ [HttpGet("events/edit/{EventId}")]
+    public IActionResult EditEvent(int EventId)
+    {
+      if (!IsUserLoggedIn()) return RedirectToIndex();
+      var EventToUpdate = _context.Events.FirstOrDefault(e => e.EventId == EventId);
+      var User = HttpContext.Session.GetInt32("UserId");
+      ViewBag.UserId = User;
+      return View(EventToUpdate);
+    }
+
+//delete Event
+    
+    [HttpGet("Event/delete/{EventId}")]
+    public IActionResult DeleteEvent(int EventId)
+    {
+      if (!IsUserLoggedIn()) return RedirectToIndex();
+       var EventToDelete = _context.Events.FirstOrDefault(e => e.EventId == EventId);
+        if (EventToDelete != null)
+        {
+            List<Attendance> relatedAttendance = _context.Attendance.Where(e => e.EventId == EventId).ToList();
+            foreach (Attendance a in relatedAttendance.ToList())
+            {
+
+                    _context.Attendance.Remove(a);
+                    _context.SaveChanges();
+
+            }
+            _context.Events.Remove(EventToDelete);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+    return RedirectToAction("Index");
+    }
+
+//------------------------------------------- Join Event 
+  [HttpPost]
+  public IActionResult JoinEvent(Attendance newJoin)
+  {
+    _context.Attendance.Add(newJoin);
+    _context.SaveChanges();
+    return RedirectToAction("showOne", new {EventId = newJoin.EventId});
+  }
     
  //---------------------------------IsUserLoggedIn method
     private bool IsUserLoggedIn()
