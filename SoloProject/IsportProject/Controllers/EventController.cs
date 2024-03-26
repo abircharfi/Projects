@@ -246,7 +246,7 @@ public IActionResult Search(string searchOption, string searchValue)
             _context.SaveChanges();
             return RedirectToAction("showOne", new {EventId= EditedEvent.EventId});
         }
-        return RedirectToAction("EditEvent");
+        return View("EditEvent");
     }
 
 // Edit event
